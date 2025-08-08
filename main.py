@@ -116,6 +116,10 @@ class TooltipConverter:
                 line = match.string[:match.start()].splitlines()[-1] if match.string[:match.start()].splitlines() else ""
                 line_lower = line.lower()
 
+
+                if re.search(r'\|.*', weapon_name): weapon_name = re.sub(r'\|.*', '', weapon_name)  # Remove any leading pipe characters
+
+
                 if "laser" in line_lower:
                     category[0] = 1
                     return f"{{{{Tooltip|{weapon_name}|{{{{LaserInfobox|{weapon_name}}}}}}}}}"
