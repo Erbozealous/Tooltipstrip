@@ -44,6 +44,11 @@ import tkinter as tk
 from tkinter import ttk
 import re
 
+# Set up global variable for alternate link names
+altLinkDirection = False
+# False = remove left
+# True = remove right
+
 class TooltipConverter:
     def __init__(self):
         self.root = tk.Tk()
@@ -83,6 +88,16 @@ class TooltipConverter:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
+
+
+        
+
+        # Create the button for alternate link names
+        self.alt_link_button = ttk.Button(button_frame, text="Alternative link names: [[REMOVE|KEEP]]", command=self.toggle_alt_link_names)
+        # Pack button to the bottom
+        self.alt_link_button.pack(side=tk.LEFT, padx=5)
+        
+
     
     def select_all(self, widget):
         widget.tag_add(tk.SEL, "1.0", tk.END)
@@ -90,7 +105,15 @@ class TooltipConverter:
         widget.see(tk.INSERT)
         return 'break'
     
-
+    def toggle_alt_link_names(self):
+        global altLinkDirection
+        altLinkDirection = not altLinkDirection
+        print(f"Alternate link names toggled to: {altLinkDirection}")
+        if altLinkDirection:
+            self.alt_link_button.config(text="Alternative link names: [[KEEP|REMOVE]]")
+        else:
+            self.alt_link_button.config(text="Alternative link names: [[REMOVE|KEEP]]")
+            
 
 
 
@@ -116,8 +139,10 @@ class TooltipConverter:
                 line = match.string[:match.start()].splitlines()[-1] if match.string[:match.start()].splitlines() else ""
                 line_lower = line.lower()
 
-
-                if re.search(r'\|.*', weapon_name): weapon_name = re.sub(r'\|.*', '', weapon_name)  # Remove any leading pipe characters
+                if altLinkDirection:
+                    if re.search(r'\|.*', weapon_name): weapon_name = re.sub(r'\|.*', '', weapon_name)  # Remove any leading pipe characters
+                else:
+                    if re.search(r'.*\|', weapon_name): weapon_name = re.sub(r'.*\|', '', weapon_name)
 
 
                 if "laser" in line_lower:
